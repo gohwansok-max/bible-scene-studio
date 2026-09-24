@@ -1,0 +1,14 @@
+# Local episode outputs and bridge audit logs
+workspace/
+
+# Secrets and developer settings
+.env
+.env.*
+*.key
+*.pem
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

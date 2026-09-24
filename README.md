@@ -1,123 +1,116 @@
 # 성경 한 장면 스튜디오
 
-> **Bible Scene Studio v1.0** — 한 장면에서 시작하는 쉬운 성경 이야기 제작 도구
+> **Bible Scene Studio v2.0 · Subscription Bridge**
+>
+> 성경 한 장면에서 시작하는 7~10분 분량의 듣는 역사 드라마 제작 도구입니다. 성경 초보 성인과 초등 고학년 이상 시청자를 위해, 본문 사실과 역사·문화 배경, 해석, 사용 금지 정보를 분리하여 대본·비주얼·업로드 자료를 만듭니다.
 
-유튜브 채널 **성경 한 장면**을 위한 브라우저 기반 정적 웹앱입니다. 성경을 잘 모르는 초등학교 고학년 이상 어린이와 성인이 성경 인물·사건을 쉽게 이해할 수 있도록, AI를 이용해 듣는 성경 이야기 제작 자료를 단계적으로 만듭니다. 이 프로젝트는 설교 또는 교리 강의가 아니라 **본문 근거를 우선하는 이야기형 콘텐츠 제작**을 목표로 합니다.
+## 접속 방식
 
-## 접속 주소
+| 방식 | 주소 또는 실행 | 용도 | 비용 안전 원칙 |
+|---|---|---|---|
+| PC 구독 모드 | `local-bridge/start_subscription_mode.bat` | Codex + Claude Code 공식 CLI로 전체 제작 | **API Key를 사용하지 않음**, 자동 API 전환 없음 |
+| 일반 웹 모드 | [GitHub Pages](https://gohwansok-max.github.io/bible-scene-studio/) | 기획, 세션 보기, 수동 프롬프트 생성, 명시적 API 모드 | 로컬 브리지 없이는 구독 실행 비활성 |
+| 수동 모드 | 앱의 `현재 단계 프롬프트 복사` | ChatGPT/Claude 공식 UI에서 직접 실행 | AI 자동 호출 없음 |
 
-- GitHub Pages: `https://gohwansok-max.github.io/bible-scene-studio/` — 저장소 생성 및 Pages 배포 후 사용
-- 저장소: `https://github.com/gohwansok-max/bible-scene-studio` — 저장소 생성 후 사용
+## v2.0 핵심 변경
 
-## 주요 기능
+기본 AI 흐름에서 Gemini를 제거했습니다. 구독 모드는 Codex CLI에 로그인된 ChatGPT 구독 계정과 Claude Code에 로그인된 Claude Pro 계정을 사용하며, 브라우저가 서비스 웹 쿠키나 로그인 토큰을 다루지 않습니다. `Local Subscription Bridge`는 `127.0.0.1:43127`에만 열리고, 고정된 공식 CLI 명령만 실행합니다.
 
-| 구분 | 기능 |
+`구독 모드`에서는 API Key·API Base URL·Bedrock/Vertex 설정 등 API 결제 경로 환경변수를 제거한 프로세스로 CLI를 실행합니다. 구독 한도에 도달하거나 로그인에 실패하면 작업을 중지하고 앞 단계 결과를 보존합니다. **API 모드로 자동 전환하지 않습니다.**
+
+## 3단계 제작 흐름
+
+| 단계 | 실행 Provider | 주요 산출물 |
+|---|---|---|
+| 1. 조사·구조화 | OpenAI Codex | Bible Evidence Pack, 본문 근거, 사건 순서, 인물 관계, 8챕터 Story Architecture |
+| 2. 메인 집필 | Claude Code | 7~10분 분량의 8챕터 내레이션 초안, 감정선, 핵심 교훈·엔딩 여운 |
+| 3. 최종 편집·비주얼 | OpenAI Codex | 성경 사실 검수, 최종 대본, YouTube 패키지, Visual Bible, 24 Story Beat, Nano Banana 프롬프트, Notion용 JSON |
+| 선택. 문체 보정 | Claude Code | 사실관계를 바꾸지 않는 리듬·TTS 호흡·감정선 미세 조정. 기본 OFF |
+
+각 단계 결과는 브라우저 세션에 저장됩니다. 실패 시 앞 단계를 다시 실행하지 않고, 실패한 단계만 재실행할 수 있습니다. `시놉시스 검토 후 자동 정지`를 선택하면 2단계 후 사용자의 검토를 기다립니다.
+
+## 구독 모드 설치 및 실행
+
+상세 절차는 [구독 모드 실행 안내](local-bridge/README_SUBSCRIPTION_MODE.md)를 따르세요.
+
+1. Node.js 20 이상을 설치합니다.
+2. [Codex CLI 공식 문서](https://learn.chatgpt.com/docs/codex/cli)에 따라 Codex CLI를 설치하고 ChatGPT 구독 계정으로 로그인합니다.
+3. [Claude Code 공식 문서](https://code.claude.com/docs/en/overview)에 따라 Claude Code를 설치하고 Claude Pro 구독 계정으로 로그인합니다.
+4. Windows에서 `local-bridge/start_subscription_mode.bat`를 실행합니다. PowerShell 사용자는 `local-bridge/start_subscription_mode.ps1`를 실행합니다.
+5. `http://127.0.0.1:43127/`가 열리면 Codex와 Claude Code의 `연결 테스트`를 각각 실행합니다.
+6. 상단 배지 **`SUBSCRIPTION · API 과금 OFF`**를 확인한 뒤 주제를 넣고 전체 자동 실행을 선택합니다.
+
+설치·로그인 과정에서 앱은 비밀번호를 입력받지 않으며, API Key는 필요하지 않습니다. 구독 플랜별 사용량 한도는 각 서비스 정책을 따릅니다.
+
+## 실행 모드
+
+| 모드 | 실행 조건 | 동작 | 전환 규칙 |
+|---|---|---|---|
+| 구독 모드 | 로컬 브리지 + 공식 CLI 설치·로그인 | Codex/Claude Code 구독 사용량을 사용 | 기본값. API Key 자동 사용 금지 |
+| API 모드 | 사용자의 명시적 선택과 확인 | OpenAI/Anthropic API를 직접 호출 | 비용 발생 가능성을 확인한 뒤만 실행 |
+| 수동 모드 | 별도 설치 불필요 | 단계별 프롬프트를 복사하여 공식 웹 UI에서 실행 | AI 자동 호출 없음 |
+
+API 모드는 정적 브라우저 앱의 제약상 Key를 서버 비밀처럼 보호할 수 없습니다. 공용 PC에는 저장하지 말고, 구독 모드와 혼동하지 마세요.
+
+## 성경·콘텐츠 품질 기준
+
+| 분류 | 처리 원칙 |
 |---|---|
-| 입력 | 인물 또는 사건, 성경 범위, 핵심 질문, 타깃, 톤, 추가 메모 설정 |
-| 생성 설정 | 목표 대본 분량, 이미지 수(18·24·30·36장), 시놉시스 검토 후 정지 선택 |
-| 1단계 | Gemini 기반 본문 근거팩: 관련 본문, 사건 순서, 인물 관계, 오해, 역사·문화 배경 |
-| 2단계 | Claude 기반 이야기 앵글: 시작 장면, 핵심 질문, 갈등, 전환점, 클라이맥스 |
-| 3단계 | Claude 기반 8챕터 시놉시스와 1차 팩트체크 |
-| 4단계 | Claude 극본 작성 후 ChatGPT 최종 사실 검증; ChatGPT 미설정 시 Claude 대체 |
-| 5단계 | 제목·썸네일·설명·태그·고정 댓글·Character Bible·이미지 프롬프트 생성 |
-| 운용 | 전체 자동 실행과 단계별 실행, 검토 모드, 세션 저장·불러오기, JSON 내보내기·가져오기 |
+| A. 본문 직접 사실 | 관련 성경 권·장·절을 기록하고 핵심 근거로 사용 |
+| B. 역사·문화 배경 | 성경 본문과 구분해 설명하고 신뢰도를 표시 |
+| C. 해석·합리적 추론 | 확정하지 않고 완화 표현 사용 |
+| D. 불확실 정보 | 대본에서 제외 |
 
-## 5단계 AI 제작 프로세스
+성경에 없는 대사·감정·동기·외모를 사실처럼 만들지 않고, 특정 교단의 해석을 유일한 답으로 단정하지 않습니다. 모든 대본의 마지막은 `실제 마지막 장면 → 핵심 교훈 또는 감동 포인트 1개 → 시청자 여운 질문` 흐름을 따릅니다. 비주얼은 고대 근동의 역사적 개연성, Character/Location/Costume/Prop Bible, 24 Shot 다양성, Nano Banana 워터마크 안전 영역을 유지합니다. 자세한 기준은 [v2 제작 기준](docs/PRODUCTION_GUIDELINES_v2.md)을 확인하세요.
 
-```text
-1. Gemini: 성경 본문 관련 자료, 인물 관계, 사건 순서, 역사·문화 배경, 흔한 오해 확인
-2. Claude: 스토리 앵글, 8챕터 시놉시스, 내레이션 중심 극본, 감정 흐름 정리
-3. ChatGPT: 본문 사실·사건 순서·인물 관계 재검증, 메타데이터, Character Bible, 이미지 프롬프트
-4. Fallback: ChatGPT API를 설정하지 않으면 Claude가 최종 검수·메타데이터 작업을 대신 수행
-5. 사용자: 생성 결과를 검토하고 최종 콘텐츠 제작·게시 결정을 수행
-```
+## 보안 설계
 
-## 콘텐츠 원칙
-
-- **성경 본문에 직접 기록된 사실**, **본문에서 합리적으로 추론 가능한 내용**, **역사·문화적 배경**, **영상 연출 표현**을 구분합니다.
-- 본문에 없는 대사·감정·동기·행동을 성경 기록처럼 단정하지 않습니다.
-- 현대 성경 번역 문장을 장문으로 복제하지 않고, 관련 권·장·절을 밝힌 뒤 자체 문장으로 설명합니다.
-- 특정 교단의 해석을 유일한 사실처럼 단정하지 않습니다.
-- 자극적 공포·충격·음모형 제목을 사용하지 않습니다.
-- 이미지 프롬프트에서는 고대 근동의 역사적 개연성, 인물 외형의 일관성, 비잔혹성, 현대 물품·텍스트·로고 배제를 기본으로 합니다.
-
-## 기본 영상 사양
-
-| 항목 | 기본값 |
+| 통제 | 적용 내용 |
 |---|---|
-| 대상 | 초등학교 고학년 이상, 성경 초보 성인 |
-| 영상 길이 | 7~10분 |
-| 대본 분량 | 약 3,000~3,800자; 화면에서 조정 가능 |
-| 구성 | 8챕터 |
-| 이미지 | 기본 24장; 18·24·30·36장 선택 가능 |
-| 형식 | AI 이미지 슬라이드, AI 내레이션, 자막, 잔잔한 배경음 |
-| 이미지 화면비 | 16:9 |
+| 로컬 바인딩 | 브리지는 `127.0.0.1:43127`만 사용하고 LAN에 공개하지 않음 |
+| 요청 제한 | Provider, 단계, 프롬프트, 플랜 기본 모델, 실행 시간만 허용 |
+| 명령 고정 | 브라우저에서 raw shell command·실행 경로·파일 경로를 전달할 수 없음 |
+| 환경 격리 | OpenAI/Anthropic API Key 및 Bedrock·Vertex 관련 환경변수 제거 |
+| 인증 분리 | 브라우저 쿠키·OAuth 토큰·로그인 세션을 읽거나 저장하지 않음 |
+| 기록 최소화 | 감사 로그에는 작업 상태·Provider·단계·시간만 저장하며 Key·토큰·프롬프트 원문을 기록하지 않음 |
+| 실패 처리 | 구독 한도·인증 실패 시 API 전환 없이 중단, 이전 결과 보존 |
 
-## Character Bible
-
-동일 인물이 여러 장면에 등장할 때 이미지 일관성을 유지하기 위한 기준표입니다. 이름, 성별, 장면별 연령대, 지역적 외모 특징, 피부톤, 얼굴형, 머리와 수염, 체격, 의상 계열, 주요 소품, 시대적 특징을 생성하고 모든 해당 장면 프롬프트에 반영합니다. 성경에 명시되지 않은 외형은 **역사적으로 개연성 있는 시각 설정**일 뿐, 성경의 사실로 표현하지 않습니다.
-
-## API Key 설정
-
-1. 앱 상단의 **설정**을 선택합니다.
-2. Gemini API Key와 model ID, Claude API Key와 model ID를 입력합니다.
-3. 필요하면 OpenAI API Key와 model ID를 입력하고 **ChatGPT 최종 팩트체크 사용**을 켭니다.
-4. **설정 저장**을 선택한 뒤 주제를 입력하고 단계별 또는 전체 자동 실행을 시작합니다.
-
-각 제공사의 브라우저 직접 호출 허용 여부, CORS 정책, 모델 이용 가능 여부는 계정·모델별로 달라질 수 있습니다. 오류가 발생하면 API Key, 모델 ID, 엔드포인트, 브라우저 직접 호출 정책을 확인해야 합니다.
-
-## API Key 보안 주의사항
-
-- GitHub Repository에는 API Key가 저장되지 않습니다.
-- 입력한 API Key와 설정은 **사용 중인 브라우저의 `localStorage`**에만 저장됩니다.
-- 정적 브라우저 앱이므로 서버 방식처럼 API Key를 완전히 비공개로 보호하는 구조는 아닙니다.
-- 공용 PC·공유 기기에서는 API Key 저장을 권장하지 않습니다.
-- API Key 입력란은 `password` 형식으로 유지됩니다.
-- `.gitignore`는 환경 파일·키 파일·내보낸 데이터·테스트 결과를 커밋 대상에서 제외합니다.
-
-## 세션 저장 방식
-
-**세션 저장**은 현재 주제, 성경 범위, 본문 근거팩, 앵글, 시놉시스, 최종 대본, 검수 기록, YouTube 메타데이터, Character Bible, 이미지 프롬프트를 브라우저 `localStorage`에 보관합니다. **내보내기**는 이 정보를 JSON 파일로 다운로드하고, **가져오기**는 해당 JSON을 다시 불러옵니다. 브라우저 데이터를 삭제하거나 다른 기기로 이동하면 localStorage 세션은 자동 동기화되지 않습니다.
-
-## 로컬 실행
-
-정적 HTML 앱이라 별도 빌드가 필요하지 않습니다.
-
-```bash
-cd bible-scene-studio
-python3 -m http.server 8080
-# http://localhost:8080 에서 확인
-```
-
-## GitHub Pages 배포
-
-1. `gohwansok-max/bible-scene-studio` Public Repository를 생성합니다.
-2. 이 폴더의 파일을 `main` branch에 푸시합니다.
-3. GitHub Repository의 **Settings → Pages**에서 아래와 같이 지정합니다.
-   - Source: **Deploy from a branch**
-   - Branch: **main**
-   - Folder: **/(root)**
-4. 배포 후 `https://gohwansok-max.github.io/bible-scene-studio/`에 접속해 확인합니다.
-
-## 파일 구조
+## 저장소 구조
 
 ```text
 bible-scene-studio/
-├── index.html
+├── index.html                              # GitHub Pages와 로컬 브리지가 공통 제공하는 v2 UI
 ├── README.md
-├── .gitignore
-└── docs/
-    └── bible_story_project_knowledge_v1_0.txt
+├── CHANGELOG.md
+├── docs/
+│   └── PRODUCTION_GUIDELINES_v2.md
+└── local-bridge/
+    ├── bridge-server.js                    # 127.0.0.1 HTTP + 정적 파일 서버
+    ├── provider-openai.js                  # 고정된 codex exec 실행 경로
+    ├── provider-claude.js                  # 고정된 claude -p 실행 경로
+    ├── security.js                          # origin/body/env/입력 검증
+    ├── logger.js                            # 비밀정보 제외 감사 로그
+    ├── start_subscription_mode.bat
+    ├── start_subscription_mode.ps1
+    ├── README_SUBSCRIPTION_MODE.md
+    └── test/bridge.integration.test.js
 ```
 
-## Future Improvements
+## 검증
 
-1. 성경 본문·역사 배경의 출처를 결과 화면에서 구조화된 링크로 표시합니다.
-2. Character Bible 재사용 라이브러리와 에피소드별 인물 버전을 추가합니다.
-3. 생성 결과의 편집·잠금·변경 이력 기능을 보강합니다.
-4. API Key를 노출하지 않는 서버 프록시 또는 OAuth 기반 연결 방식을 별도 안전 배포 구조로 검토합니다.
-5. 이미지 프롬프트를 챕터별 타임라인·내레이션 구간과 함께 CSV 또는 편집용 스토리보드로 내보냅니다.
+Node.js가 설치된 환경에서 아래 명령으로 Local Bridge의 보안·동작 통합 테스트를 실행합니다.
 
-## 버전
+```bash
+node local-bridge/test/bridge.integration.test.js
+```
 
-현재 버전: **v1.0**
+테스트는 가짜 Codex/Claude 명령을 사용해 `127.0.0.1` 바인딩, 정적 페이지 제공, 허용되지 않은 Origin 거부, 고정된 Provider 실행, API Key 환경변수 제거를 검증합니다. 실제 ChatGPT Plus·Claude Pro 연결 테스트와 성경 콘텐츠 생성은 사용자의 PC에서 각 공식 CLI에 구독 계정으로 로그인한 뒤 실행해야 합니다.
+
+## 공식 문서
+
+- OpenAI: [Using Codex with your ChatGPT plan](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan), [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode)
+- Anthropic: [Using Claude Code with Pro or Max plan](https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan), [Claude Code headless mode](https://code.claude.com/docs/en/headless)
+
+## 현재 버전
+
+**v2.0 · Subscription Bridge**
