@@ -6,6 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { assertLocalOrigin, parseJsonBody, validateRun, publicError } = require('./security');
 const { createLogger } = require('./logger');
+const { killTree } = require('./cli-runner');
 const openai = require('./provider-openai');
 const claude = require('./provider-claude');
 
@@ -126,7 +127,7 @@ const server = http.createServer(async (req, res) => {
       job.status = 'cancelled';
       job.error = '사용자가 작업을 취소했습니다. 이전 결과는 보존됩니다.';
       job.completedAt = new Date().toISOString();
-      if (job.child && !job.child.killed) job.child.kill('SIGTERM');
+      killTree(job.child);
       logger.write('job_cancelled', { ...job, status: 'cancelled' });
       return json(res, 200, presentJob(job));
     }
@@ -153,7 +154,7 @@ server.listen(PORT, HOST, () => {
 });
 
 function shutdown() {
-  for (const job of jobs.values()) if (job.child && !job.child.killed) job.child.kill('SIGTERM');
+  for (const job of jobs.values()) killTree(job.child);
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(0), 2000).unref();
 }

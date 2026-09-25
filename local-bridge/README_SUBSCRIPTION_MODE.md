@@ -20,6 +20,9 @@ GitHub Pages 주소는 기획·세션 보기·수동 모드·명시적으로 선
 1. **Node.js 20 이상**을 설치합니다. [공식 Node.js 다운로드](https://nodejs.org/)
 2. **Codex CLI**를 설치하고 터미널에서 ChatGPT 구독 계정으로 로그인합니다. [OpenAI Codex CLI 공식 문서](https://learn.chatgpt.com/docs/codex/cli)
 3. **Claude Code**를 설치하고 터미널에서 Claude Pro 구독 계정으로 로그인합니다. [Claude Code 공식 설치 문서](https://code.claude.com/docs/en/overview)
+   - 로그인은 `local-bridge/login_subscriptions.bat`로 한 번에 진행할 수 있습니다. 각 CLI의 공식 브라우저 로그인 창만 열며, 비밀번호·토큰을 앱이 다루지 않습니다.
+   - Codex는 `codex login status` 결과가 **`Logged in using ChatGPT`**여야 합니다. `API key`로 표시되면 ChatGPT 계정으로 다시 로그인합니다.
+   - Claude Code는 `claude auth login --claudeai`(Claude 구독 로그인)를 사용합니다. `--console`(API 과금) 로그인은 사용하지 않습니다.
 4. 이 저장소의 `local-bridge/start_subscription_mode.bat`를 더블클릭합니다. PowerShell 사용 시 `start_subscription_mode.ps1`를 실행합니다.
 5. 열린 화면의 **연결 상태**에서 두 Provider의 `연결 테스트`를 실행합니다.
 6. 상단 배지가 **`SUBSCRIPTION · API 과금 OFF`**인지 확인한 뒤 주제를 입력하고 전체 자동 실행을 시작합니다.
@@ -50,7 +53,7 @@ API Key는 위 과정에 필요하지 않습니다. Codex와 Claude Code의 사�
 |---|---|
 | Codex CLI가 설치되어 있지 않습니다 | Codex CLI 설치 후 ChatGPT 계정으로 로그인 |
 | Claude Code가 설치되어 있지 않습니다 | Claude Code 설치 후 Claude Pro 계정으로 로그인 |
-| 공식 CLI의 구독 계정 로그인이 필요합니다 | 각 터미널에서 공식 로그인 절차 수행 |
+| 공식 CLI의 구독 계정 로그인이 필요합니다 | `local-bridge/login_subscriptions.bat` 실행 후 브리지 재시작 |
 | 구독 사용 한도에 도달했습니다 | 한도 초기화 후 재실행. API 전환은 사용자가 별도 선택 |
 | 이전 단계 결과는 보존되었습니다 | 실패한 단계만 다시 실행 |
 
