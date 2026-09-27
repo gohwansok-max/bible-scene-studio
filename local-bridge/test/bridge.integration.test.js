@@ -17,8 +17,8 @@ function fake(name, body) {
   const file = path.join(bin, name);
   fs.writeFileSync(file, `#!/usr/bin/env sh\n${body}\n`, { mode: 0o755 });
 }
-fake('codex', `if [ "$1" = "--version" ]; then echo "codex test 1.0"; exit 0; fi\ninput=$(cat)\nprintf 'codex-output api-key-present=%s prompt=%s' "\${OPENAI_API_KEY:+yes}\${CODEX_API_KEY:+yes}" "$input"`);
-fake('claude', `if [ "$1" = "--version" ]; then echo "claude test 1.0"; exit 0; fi\ninput=$(cat)\nprintf '{"result":"claude-output api-key-present=%s prompt=%s"}' "\${ANTHROPIC_API_KEY:+yes}" "$input"`);
+fake('codex', `if [ "$1" = "--version" ]; then echo "codex test 1.0"; exit 0; fi\ninput=$(cat)\nprintf 'codex-output api-key-present=%s args=%s prompt=%s' "\${OPENAI_API_KEY:+yes}\${CODEX_API_KEY:+yes}" "$*" "$input"`);
+fake('claude', `if [ "$1" = "--version" ]; then echo "claude test 1.0"; exit 0; fi\ninput=$(cat)\nprintf '{"result":"claude-output api-key-present=%s args=%s prompt=%s"}' "\${ANTHROPIC_API_KEY:+yes}" "$*" "$input"`);
 
 const server = spawn(process.execPath, ['local-bridge/bridge-server.js'], {
   cwd: repo,
@@ -65,14 +65,18 @@ async function waitJob(id) {
     const openaiJob = await waitJob(openaiStart.json.id);
     assert.match(openaiJob.result, /codex-output api-key-present=/);
     assert.doesNotMatch(openaiJob.result, /api-key-present=yes/);
+    assert.match(openaiJob.result, /--skip-git-repo-check/);
 
     const claudeStart = await request('/api/run/claude', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'claude', stage: 'draft', prompt: 'safe draft', model: 'plan-default', timeoutSeconds: 10 }) });
     assert.equal(claudeStart.status, 202);
     const claudeJob = await waitJob(claudeStart.json.id);
     assert.match(claudeJob.result, /claude-output api-key-present=/);
     assert.doesNotMatch(claudeJob.result, /api-key-present=yes/);
+    // --bare는 Claude Pro OAuth 로그인을 무시하고 API Key만 허용하므로 구독 모드에서 금지
+    assert.doesNotMatch(claudeJob.result, /--bare/);
+    assert.match(claudeJob.result, /args=-p --output-format json prompt=safe draft/);
 
-    const page = await fetch('http://127.0.0.1:43127/');
+    const page = await fetch(baseUrl + '/');
     assert.equal(page.status, 200);
     assert.match(await page.text(), /Bible Scene Studio v2\.0/);
     console.log('PASS: Bridge API, same-origin rejection, fixed CLI invocation, API-key environment sanitization, static page delivery');
